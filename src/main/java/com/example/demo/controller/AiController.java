@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.service.AiServiceByClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,9 +19,9 @@ import reactor.core.publisher.Flux;
 @Slf4j
 public class AiController {
 
-	private final AiService aiService;
-
-	AiController(AiService aiService) {
+//	private final AiService aiService;
+	private final AiServiceByClient aiService;
+	AiController(AiServiceByClient aiService) {
 		this.aiService = aiService;
 	}
 
