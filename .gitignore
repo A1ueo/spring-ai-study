@@ -1,4 +1,6 @@
 *.properties
+*.yaml
+*.yml
 
 HELP.md
 .gradle
