@@ -16,38 +16,38 @@ import reactor.core.publisher.Flux;
 @Slf4j
 public class AiService {
 
-    private final ChatModel chatModel;
+	private final ChatModel chatModel;
 
-    AiService(ChatModel chatModel) {
-        this.chatModel = chatModel;
-    }
+	public AiService(ChatModel chatModel) {
+		this.chatModel = chatModel;
+	}
 
-    public String generateText(String question) {
-        SystemMessage systemMessage = SystemMessage.builder()
-                .text("Answer in Korean language.")
-                .build();
+	public String generateText(String question) {
+		SystemMessage systemMessage = SystemMessage.builder()
+				.text("Answer in Korean language.")
+				.build();
 
-        UserMessage userMessage = UserMessage.builder()
-                .text(question)
-                .build();
+		UserMessage userMessage = UserMessage.builder()
+				.text(question)
+				.build();
 
-        ChatOptions chatOptions = ChatOptions.builder()
-                .model("llama3.2")
-                .temperature(0.3)
-                .maxTokens(1000)
-                .build();
+		ChatOptions chatOptions = ChatOptions.builder()
+				.model("llama3.2")
+				.temperature(0.3)
+				.maxTokens(1000)
+				.build();
 
-        Prompt prompt = Prompt.builder()
-                .messages(systemMessage, userMessage)
-                .chatOptions(chatOptions)
-                .build();
+		Prompt prompt = Prompt.builder()
+				.messages(systemMessage, userMessage)
+				.chatOptions(chatOptions)
+				.build();
 
-        ChatResponse chatResponse = chatModel.call(prompt);
-        AssistantMessage assistantMessage = chatResponse.getResult().getOutput();
-        String answer = assistantMessage.getText();
+		ChatResponse chatResponse = chatModel.call(prompt);
+		AssistantMessage assistantMessage = chatResponse.getResult().getOutput();
+		String answer = assistantMessage.getText();
 
-        return answer;
-    }
+		return answer;
+	}
 
 	public Flux<String> generateStreamText(String question) {
 		SystemMessage systemMessage = SystemMessage.builder()
@@ -73,7 +73,7 @@ public class AiService {
 		Flux<String> fluxString = fluxResponse.map(chatResponse -> {
 			AssistantMessage assistantMessage = chatResponse.getResult().getOutput();
 			String chunk = assistantMessage.getText();
-			if(chunk == null) chunk = "";
+			if (chunk == null) chunk = "";
 			return chunk;
 		});
 

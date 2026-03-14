@@ -19,9 +19,10 @@ import reactor.core.publisher.Flux;
 @Slf4j
 public class AiController {
 
-//	private final AiService aiService;
+	//	private final AiService aiService;
 	private final AiServiceByClient aiService;
-	AiController(AiServiceByClient aiService) {
+
+	public AiController(AiServiceByClient aiService) {
 		this.aiService = aiService;
 	}
 
