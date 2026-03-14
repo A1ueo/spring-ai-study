@@ -10,6 +10,7 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
 
 @Service
 @Slf4j
@@ -47,4 +48,35 @@ public class AiService {
 
         return answer;
     }
+
+	public Flux<String> generateStreamText(String question) {
+		SystemMessage systemMessage = SystemMessage.builder()
+				.text("Answer in Korean language.")
+				.build();
+
+		UserMessage userMessage = UserMessage.builder()
+				.text(question)
+				.build();
+
+		ChatOptions chatOptions = ChatOptions.builder()
+				.model("llama3.2")
+				.temperature(0.3)
+				.maxTokens(1000)
+				.build();
+
+		Prompt prompt = Prompt.builder()
+				.messages(systemMessage, userMessage)
+				.chatOptions(chatOptions)
+				.build();
+
+		Flux<ChatResponse> fluxResponse = chatModel.stream(prompt);
+		Flux<String> fluxString = fluxResponse.map(chatResponse -> {
+			AssistantMessage assistantMessage = chatResponse.getResult().getOutput();
+			String chunk = assistantMessage.getText();
+			if(chunk == null) chunk = "";
+			return chunk;
+		});
+
+		return fluxString;
+	}
 }
