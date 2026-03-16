@@ -38,7 +38,8 @@
         
 				// JSON 답변 출력하기
 				const jsonString = await response.text();
-				springai.printAnswerJson(jsonString, uuid, "chatPanel");
+          console.log(jsonString);
+          springai.printAnswerJson(jsonString, uuid, "chatPanel");
       } catch (error) {
         console.log(error)
       } finally {
