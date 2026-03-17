@@ -26,4 +26,14 @@ public class AiController {
 		aiService.textEmbedding2(question);
 		return "서버 터미널(콘솔) 출력을 확인하세요.";
 	}
+
+	@PostMapping(
+			value = "/add-document",
+			consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+			produces = MediaType.TEXT_PLAIN_VALUE
+	)
+	public String addDocument(@RequestParam("question") String question) {
+		aiService.addDocument();
+		return "벡터 저장소에 Document들이 저장되었습니다.";
+	}
 }
