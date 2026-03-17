@@ -6,7 +6,9 @@ import org.springframework.ai.embedding.Embedding;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.embedding.EmbeddingResponse;
 import org.springframework.ai.embedding.EmbeddingResponseMetadata;
+import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,5 +54,45 @@ public class AiService {
 		);
 
 		vectorStore.add(documents);
+	}
+
+	public List<Document> searchDocument1(String question) {
+		List<Document> documents = vectorStore.similaritySearch(question);
+
+		return documents;
+	}
+
+	public List<Document> searchDocument2(String question) {
+		List<Document> documents = vectorStore.similaritySearch(
+				SearchRequest.builder()
+						.query(question)
+						.topK(1)
+						.similarityThreshold(0.4)
+						.filterExpression("source == '헌법' && year >= 1987")
+						.build()
+		);
+
+		return documents;
+	}
+
+	public List<Document> searchDocument3(String question) {
+		FilterExpressionBuilder feb = new FilterExpressionBuilder();
+
+		List<Document> documents = vectorStore.similaritySearch(
+				SearchRequest.builder()
+						.query(question)
+						.topK(3)
+						.similarityThreshold(0.4)
+						.filterExpression(feb
+								.and(
+										feb.eq("source", "헌법"),
+										feb.gte("year", 1987)
+								)
+								.build()
+						)
+						.build()
+		);
+
+		return documents;
 	}
 }
