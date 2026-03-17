@@ -1,0 +1,68 @@
+package com.example.demo.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+
+import com.example.demo.service.AiService1;
+
+import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/ai")
+@Slf4j
+public class AiController {
+  // ##### 필드 #####
+  @Autowired
+  private AiService1 aiService1;
+//  @Autowired
+//  private AiService2 aiService2;
+//  @Autowired
+//  private AiService3 aiService3;
+//  @Autowired
+//  private AiService4 aiService4;
+
+  // ##### 요청 매핑 메소드 #####
+  @PostMapping(
+      value = "/advisor-chain", 
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_NDJSON_VALUE
+  )
+  public Flux<String> advisorChain(@RequestBody Map<String, String> map) {
+    Flux<String> response = aiService1.advisorChain2(map.get("question"));
+    return response;
+  }
+  
+//  @PostMapping(
+//      value = "/advisor-context",
+//      consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+//      produces = MediaType.TEXT_PLAIN_VALUE
+//  )
+//  public String advisorContext(@RequestParam("question") String question) {
+//    String response = aiService2.advisorContext(question);
+//    return response;
+//  }
+//
+//  @PostMapping(
+//      value = "/advisor-logging",
+//      consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+//      produces = MediaType.TEXT_PLAIN_VALUE
+//  )
+//  public String advisorLogging(@RequestParam("question") String question) {
+//    String response = aiService3.advisorLogging(question);
+//    return response;
+//  }
+//
+//  @PostMapping(
+//      value = "/advisor-safe-guard",
+//      consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+//      produces = MediaType.TEXT_PLAIN_VALUE
+//  )
+//  public String advisorSafeGuard(@RequestParam("question") String question) {
+//    String response = aiService4.advisorSafeGuard(question);
+//    return response;
+//  }
+}
