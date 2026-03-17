@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.service.AiService2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,8 +19,8 @@ public class AiController {
   // ##### 필드 #####
   @Autowired
   private AiService1 aiService1;
-//  @Autowired
-//  private AiService2 aiService2;
+  @Autowired
+  private AiService2 aiService2;
 //  @Autowired
 //  private AiService3 aiService3;
 //  @Autowired
@@ -36,16 +37,16 @@ public class AiController {
     return response;
   }
   
-//  @PostMapping(
-//      value = "/advisor-context",
-//      consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-//      produces = MediaType.TEXT_PLAIN_VALUE
-//  )
-//  public String advisorContext(@RequestParam("question") String question) {
-//    String response = aiService2.advisorContext(question);
-//    return response;
-//  }
-//
+  @PostMapping(
+      value = "/advisor-context",
+      consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+      produces = MediaType.TEXT_PLAIN_VALUE
+  )
+  public String advisorContext(@RequestParam("question") String question) {
+    String response = aiService2.advisorContext(question);
+    return response;
+  }
+
 //  @PostMapping(
 //      value = "/advisor-logging",
 //      consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
