@@ -2,15 +2,12 @@ package com.example.demo.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
-import org.springframework.ai.chat.client.advisor.vectorstore.VectorStoreChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.embedding.EmbeddingModel;
-import org.springframework.ai.vectorstore.VectorStore;
-import org.springframework.ai.vectorstore.pgvector.PgVectorStore;
+import org.springframework.ai.chat.memory.MessageWindowChatMemory;
+import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
 import org.springframework.core.Ordered;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,19 +16,15 @@ public class AiService {
 
 	private ChatClient chatClient;
 
-	public AiService(ChatClient.Builder chatClientBuilder, JdbcTemplate jdbcTemplate,
-					 EmbeddingModel embeddingModel) {
-		VectorStore vectorStore = PgVectorStore.builder(jdbcTemplate, embeddingModel)
-				.initializeSchema(false)
-				.schemaName("public")
-				.vectorTableName("chat_memory_vector_store")
+	public AiService(ChatClient.Builder chatClientBuilder, JdbcChatMemoryRepository chatMemoryRepository) {
+		ChatMemory chatMemory = MessageWindowChatMemory.builder()
+				.chatMemoryRepository(chatMemoryRepository)
+				.maxMessages(20)
 				.build();
 
 		this.chatClient = chatClientBuilder
 				.defaultAdvisors(
-						VectorStoreChatMemoryAdvisor.builder(vectorStore)
-								.defaultTopK(5)
-								.build(),
+						PromptChatMemoryAdvisor.builder(chatMemory).build(),
 						new SimpleLoggerAdvisor(Ordered.LOWEST_PRECEDENCE - 1)
 				)
 				.build();
