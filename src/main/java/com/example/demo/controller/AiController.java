@@ -27,7 +27,7 @@ public class AiController {
     consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
     produces = MediaType.TEXT_PLAIN_VALUE
   )
-  public String inMemoryChatMemory(
+  public String chatMemory(
       @RequestParam("question") String question, HttpSession session) {
     String answer = aiService.chat(question, session.getId());
     return answer;
