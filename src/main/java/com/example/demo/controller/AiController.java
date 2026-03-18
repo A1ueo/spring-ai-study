@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.service.ETLService;
 import com.example.demo.service.RagService1;
+import com.example.demo.service.RagService2;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -19,8 +21,8 @@ public class AiController {
   @Autowired
   private RagService1 ragService1;
 
-//   @Autowired
-//  private RagService2 ragService2;
+   @Autowired
+  private RagService2 ragService2;
   
   // ##### 요청 매핑 메소드 #####
   @PostMapping(
@@ -97,21 +99,21 @@ public class AiController {
     return answer;
   }
 
-//  @PostMapping(
-//    value = "/compression-query-transformer",
-//    consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-//    produces = MediaType.TEXT_PLAIN_VALUE
-//  )
-//  public String compressionQueryTransformer(
-//    @RequestParam("question") String question,
-//    @RequestParam(value = "score", defaultValue = "0.0") double score,
-//    @RequestParam("source") String source,
-//    HttpSession session
-//  ) {
-//    String answer = ragService2.chatWithCompression(question, score, source, session.getId());
-//    return answer;
-//  }
-//
+  @PostMapping(
+    value = "/compression-query-transformer",
+    consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+    produces = MediaType.TEXT_PLAIN_VALUE
+  )
+  public String compressionQueryTransformer(
+    @RequestParam("question") String question,
+    @RequestParam(value = "score", defaultValue = "0.0") double score,
+    @RequestParam("source") String source,
+    HttpSession session
+  ) {
+    String answer = ragService2.chatWithCompression(question, score, source, session.getId());
+    return answer;
+  }
+
 //  @PostMapping(
 //    value = "/rewrite-query-transformer",
 //    consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
