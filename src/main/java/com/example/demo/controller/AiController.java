@@ -77,4 +77,14 @@ public class AiController {
 		}
 		return text;
 	}
+
+	@PostMapping(
+			value = "/delete-document",
+			consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+			produces = MediaType.TEXT_PLAIN_VALUE
+	)
+	public String deleteDocument(@RequestParam("question") String question) {
+		aiService.deleteDocument();
+		return "Document들이 삭제되었습니다.";
+	}
 }

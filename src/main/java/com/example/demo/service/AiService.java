@@ -95,4 +95,8 @@ public class AiService {
 
 		return documents;
 	}
+
+	public void deleteDocument() {
+		vectorStore.delete("source == '헌법' && year < 1987");
+	}
 }
