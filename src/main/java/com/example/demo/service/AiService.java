@@ -6,7 +6,7 @@ import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
-import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
+import org.springframework.ai.chat.memory.repository.cassandra.CassandraChatMemoryRepository;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ public class AiService {
 
 	private ChatClient chatClient;
 
-	public AiService(ChatClient.Builder chatClientBuilder, JdbcChatMemoryRepository chatMemoryRepository) {
+	public AiService(ChatClient.Builder chatClientBuilder, CassandraChatMemoryRepository chatMemoryRepository) {
 		ChatMemory chatMemory = MessageWindowChatMemory.builder()
 				.chatMemoryRepository(chatMemoryRepository)
 				.maxMessages(20)
