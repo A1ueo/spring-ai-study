@@ -4,14 +4,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.document.DocumentReader;
+import org.springframework.ai.document.DocumentTransformer;
 import org.springframework.ai.model.transformer.KeywordMetadataEnricher;
+import org.springframework.ai.reader.JsonMetadataGenerator;
+import org.springframework.ai.reader.JsonReader;
 import org.springframework.ai.reader.TextReader;
+import org.springframework.ai.reader.jsoup.JsoupDocumentReader;
+import org.springframework.ai.reader.jsoup.config.JsoupDocumentReaderConfig;
 import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -86,5 +92,68 @@ public class ETLService {
 		transformedDocuments = keywordMetadataEnricher.apply(transformedDocuments);
 
 		return transformedDocuments;
+	}
+
+	public String etlFromHtml(String title, String author, String url) throws Exception {
+		Resource resource = new UrlResource(url);
+
+		JsoupDocumentReader reader = new JsoupDocumentReader(
+				resource,
+				JsoupDocumentReaderConfig.builder()
+						.charset("UTF-8")
+						.selector("#content")
+						.metadataTag("author")
+						.additionalMetadata(Map.of(
+								"title", title,
+								"author", author,
+								"url", url
+						)).build()
+		);
+
+		List<Document> documents = reader.read();
+		log.info("추출된 Document 수: {} 개", documents.size());
+
+		DocumentTransformer transformer = new TokenTextSplitter();
+		List<Document> transformedDocuments = transformer.apply(documents);
+		log.info("변환된 Document 수: {} 개", transformedDocuments.size());
+
+		vectorStore.add(transformedDocuments);
+
+		return "HTML에서 추출-변환-적재 완료 했습니다.";
+	}
+
+	public String etlFromJson(String url) throws Exception {
+		Resource resource = new UrlResource(url);
+
+		JsonReader reader = new JsonReader(
+				resource,
+//				new JsonMetadataGenerator() {
+//					@Override
+//					public Map<String, Object> generate(Map<String, Object> jsonMap) {
+//						return Map.of(
+//								"title", jsonMap.get("title"),
+//								"author", jsonMap.get("author"),
+//								"url", "http://localhost:8080/document/constitution(19880225).json"
+//						);
+//					}
+//				},
+				jsonMap -> Map.of(
+						"title", jsonMap.get("title"),
+						"author", jsonMap.get("author"),
+						"url", "http://localhost:8080/document/constitution(19880225).json"
+				),
+				"date", "content"
+		);
+
+		List<Document> documents = reader.read();
+		log.info("추출된 Document 수: {} 개", documents.size());
+
+		DocumentTransformer transformer = new TokenTextSplitter();
+		List<Document> transformedDocuments = transformer.apply(documents);
+		log.info("변환된 Document 수: {} 개", transformedDocuments.size());
+
+		vectorStore.add(transformedDocuments);
+
+		return "JSON에서 추출-변환-적재 완료했습니다.";
 	}
 }

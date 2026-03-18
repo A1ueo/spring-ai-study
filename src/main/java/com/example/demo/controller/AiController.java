@@ -38,29 +38,29 @@ public class AiController {
     return result;
   } 
 
-//  @PostMapping(
-//    value = "/html-etl",
-//    consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-//    produces = MediaType.TEXT_PLAIN_VALUE
-//  )
-//  public String htmlEtl(
-//    @RequestParam("title") String title,
-//    @RequestParam("author") String author,
-//    @RequestParam("url") String url) throws Exception {
-//    String result = etlService.etlFromHtml(title, author, url);
-//    return result;
-//  }
-//
-//  @PostMapping(
-//    value = "/json-etl",
-//    consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-//    produces = MediaType.TEXT_PLAIN_VALUE
-//  )
-//  public String jsonEtl(@RequestParam("url") String url) throws Exception {
-//    String result = etlService.etlFromJson(url);
-//    return result;
-//  }
-//
+  @PostMapping(
+    value = "/html-etl",
+    consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+    produces = MediaType.TEXT_PLAIN_VALUE
+  )
+  public String htmlEtl(
+    @RequestParam("title") String title,
+    @RequestParam("author") String author,
+    @RequestParam("url") String url) throws Exception {
+    String result = etlService.etlFromHtml(title, author, url);
+    return result;
+  }
+
+  @PostMapping(
+    value = "/json-etl",
+    consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+    produces = MediaType.TEXT_PLAIN_VALUE
+  )
+  public String jsonEtl(@RequestParam("url") String url) throws Exception {
+    String result = etlService.etlFromJson(url);
+    return result;
+  }
+
 //  @GetMapping(
 //    value = "/rag-clear",
 //    produces = MediaType.TEXT_PLAIN_VALUE
