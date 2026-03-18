@@ -68,12 +68,15 @@ public class ETLService {
 
 		List<Document> documents = null;
 		if (attach.getContentType().equals("text/plain")) {
+			// Text(.txt) 파일일 경우
 			DocumentReader reader = new TextReader(resource);
 			documents = reader.read();
 		} else if (attach.getContentType().equals("application/pdf")) {
+			// PDF(.pdf) 파일일 경우
 			DocumentReader reader = new PagePdfDocumentReader(resource);
 			documents = reader.read();
-		} else if (attach.getContentType().equals("wordprocessingml")) {
+		} else if (attach.getContentType().contains("wordprocessingml")) {
+			// Word(.doc, .docx) 파일일 경우
 			DocumentReader reader = new TikaDocumentReader(resource);
 			documents = reader.read();
 		}
