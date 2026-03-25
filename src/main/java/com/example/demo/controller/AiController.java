@@ -114,20 +114,20 @@ public class AiController {
     return answer;
   }
 
-//  @PostMapping(
-//    value = "/rewrite-query-transformer",
-//    consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-//    produces = MediaType.TEXT_PLAIN_VALUE
-//  )
-//  public String rewriteQueryTransformer(
-//    @RequestParam("question") String question,
-//    @RequestParam(value = "score", defaultValue = "0.0") double score,
-//    @RequestParam("source") String source
-//  ) {
-//    String answer = ragService2.chatWithRewriteQuery(question, score, source);
-//    return answer;
-//  }
-//
+  @PostMapping(
+    value = "/rewrite-query-transformer",
+    consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+    produces = MediaType.TEXT_PLAIN_VALUE
+  )
+  public String rewriteQueryTransformer(
+    @RequestParam("question") String question,
+    @RequestParam(value = "score", defaultValue = "0.0") double score,
+    @RequestParam("source") String source
+  ) {
+    String answer = ragService2.chatWithRewriteQuery(question, score, source);
+    return answer;
+  }
+
 //  @PostMapping(
 //    value = "/translation-query-transformer",
 //    consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
