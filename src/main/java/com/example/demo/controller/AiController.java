@@ -142,18 +142,18 @@ public class AiController {
     return answer;
   }
 
-//  @PostMapping(
-//    value = "/multi-query-expander",
-//    consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-//    produces = MediaType.TEXT_PLAIN_VALUE
-//  )
-//  public String multiQueryExpander(
-//    @RequestParam("question") String question,
-//    @RequestParam(value = "score", defaultValue = "0.0") double score,
-//    @RequestParam("source") String source
-//  ) {
-//    String answer = ragService2.chatWithMultiQuery(question, score, source);
-//    return answer;
-//  }
+  @PostMapping(
+    value = "/multi-query-expander",
+    consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+    produces = MediaType.TEXT_PLAIN_VALUE
+  )
+  public String multiQueryExpander(
+    @RequestParam("question") String question,
+    @RequestParam(value = "score", defaultValue = "0.0") double score,
+    @RequestParam("source") String source
+  ) {
+    String answer = ragService2.chatWithMultiQuery(question, score, source);
+    return answer;
+  }
 }
 
