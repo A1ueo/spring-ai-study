@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
@@ -11,12 +12,25 @@ import org.springframework.ai.image.ImageModel;
 import org.springframework.ai.image.ImagePrompt;
 import org.springframework.ai.image.ImageResponse;
 import org.springframework.ai.openai.OpenAiImageOptions;
+import org.springframework.ai.openai.api.OpenAiImageApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MimeType;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -26,6 +40,10 @@ public class AiService {
 
 	@Autowired
 	private ImageModel imageModel;
+
+	@Value("${spring.ai.openai.api-key}")
+	String apiKey;
+
 
 	public AiService(ChatClient.Builder chatClientBuilder) {
 		this.chatClient = chatClientBuilder
@@ -93,5 +111,62 @@ public class AiService {
 
 		String b64Json = imageResponse.getResult().getOutput().getB64Json();
 		return b64Json;
+	}
+
+	public String editImage(String description, byte[] originalImage,
+							byte[] maskImage) {
+		String englishDescription = koToEn(description);
+
+		ByteArrayResource originalRes = new ByteArrayResource(originalImage) {
+			@Override
+			public String getFilename() {
+				return "image.png";
+			}
+		};
+
+		ByteArrayResource maskRes = new ByteArrayResource(maskImage) {
+			@Override
+			public String getFilename() {
+				return "mask.png";
+			}
+		};
+
+		MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
+		form.add("model", "gpt-image-1");
+		form.add("image", originalRes);
+		form.add("mask", maskRes);
+		form.add("prompt", englishDescription);
+		form.add("n", "1");
+		form.add("size", "1536x1024");
+		form.add("quality", "low");
+
+		WebClient webClient = WebClient.builder()
+				.baseUrl("https://api.openai.com/v1/images/edits")
+				.defaultHeader("Authorization", "Bearer " + apiKey)
+				.exchangeStrategies(ExchangeStrategies.builder()
+						.codecs(codecs -> codecs.defaultCodecs()
+								.maxInMemorySize(10 * 1536 * 1024))
+						.build())
+				.build();
+
+		Mono<OpenAiImageEditResponse> mono = webClient.post()
+				.contentType(MediaType.MULTIPART_FORM_DATA)
+				.body(BodyInserters.fromMultipartData(form))
+				.retrieve()
+				.bodyToMono(OpenAiImageEditResponse.class);
+
+		OpenAiImageEditResponse response = mono.block();
+
+		String b64Json = response.data().get(0).b64_json();
+		return b64Json;
+	}
+
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public record OpenAiImageEditResponse(List<Image> data) {
+		@JsonIgnoreProperties(ignoreUnknown = true)
+		public record Image(
+				String url,
+				String b64_json
+		) {}
 	}
 }
